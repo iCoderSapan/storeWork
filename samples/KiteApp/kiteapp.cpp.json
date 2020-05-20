@@ -1,0 +1,71 @@
+#include <cpprest/http_client.h> 
+#include <cpprest/filestream.h> 
+//----- Some standard C++ headers emitted for brevity
+#include "cpprest/json.h" 
+#include "cpprest/http_listener.h" 
+#include "cpprest/uri.h" 
+#include "cpprest/asyncrt_utils.h"
+#include <boost/algorithm/string.hpp>
+
+#include <iomanip>
+#include <sstream>
+#include <string>
+#include <iostream>
+#include <openssl/sha.h>
+#include <memory>
+//////////////////////////////////////////////// 
+// A Simple HTTP Client to Demonstrate  
+// REST SDK Client programming model 
+// The Toy sample shows how one can read  
+// contents of a web page 
+// 
+using namespace utility;  // Common utilities like string conversions 
+using namespace web;      // Common features like URIs. 
+using namespace web::http;// Common HTTP functionality 
+using namespace web::http::client;// HTTP client features 
+using namespace concurrency::streams;// Asynchronous streams
+using namespace boost::algorithm;
+
+/* 
+    /// <summary>
+    /// Asynchronously sends an HTTP request.
+    /// </summary>
+    /// <param name="mtd">HTTP request method.</param>
+    /// <param name="path_query_fragment">String containing the path, query, and fragment, relative to the http_client's
+    /// base URI.</param> <param name="body_data">The data to be used as the message body, represented using the json
+    /// object library.</param> <param name="token">Cancellation token for cancellation of this request
+    /// operation.</param> <returns>An asynchronous operation that is completed once a response from the request is
+    /// received.</returns>
+    pplx::task<http_response> request(const method& mtd,
+                                      const utility::string_t& path_query_fragment,
+                                      const json::value& body_data,
+                                      const pplx::cancellation_token& token = pplx::cancellation_token::none())
+    {
+*/
+std::string sha256(const std::string str)
+{
+    unsigned char hash[SHA256_DIGEST_LENGTH];
+    SHA256_CTX sha256;
+    SHA256_Init(&sha256);
+    SHA256_Update(&sha256, str.c_str(), str.size());
+    SHA256_Final(hash, &sha256);
+    std::stringstream ss;
+    for(int i = 0; i < SHA256_DIGEST_LENGTH; i++)
+    {
+        ss << std::hex << std::setw(2) << std::setfill('0') << (int)hash[i];
+    }
+    return ss.str();
+}
+
+int main(int argc, char* argv[]) 
+{
+   json::value obj = json::value::parse(U("{\"status\":\"success\",\"data\":{\"user_type\":\"individual\",\"email\":\"dassonali6979@gmail.com\",\"user_name\":\"Suneli Singh\",\"user_shortname\":\"Suneli\",\"broker\":\"ZERODHA\",\"exchanges\":[\"BSE\",\"NSE\",\"MF\"],\"products\":[\"CNC\",\"NRML\",\"MIS\",\"BO\",\"CO\"],\"order_types\":[\"MARKET\",\"LIMIT\",\"SL\",\"SL-M\"],\"avatar_url\":\"\",\"user_id\":\"WV4410\",\"api_key\":\"utmcr52rmqeze8sc\",\"access_token\":\"vvvVdOC9cbFHgq6TemOTGwzlnerirueZ\",\"public_token\":\"wo7ldgrNQYI01vOfKQsd3zRbljH04jaA\",\"refresh_token\":\"\",\"silo\":\"\",\"login_time\":\"2020-05-09 22:22:22\",\"meta\":{\"demat_consent\":\"consent\"}}}"));
+   json::value dataValue = obj.at("data");
+
+   json::value final_data = dataValue.at("email");
+   std::cout<< final_data.as_string()<<std::endl;
+   std::cout<<replace_first_copy(std::string("sapan likes Jigyansa"), "likes", "loves")<<std::endl;
+   getchar();
+   return 0; 
+} 
+
